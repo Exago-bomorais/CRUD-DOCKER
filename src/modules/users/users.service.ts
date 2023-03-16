@@ -30,7 +30,7 @@ export class UsersService {
 
   async findOne(id: string) {
     const userExists = await this.prisma.user.findFirst({
-      where: { id: Number(id) },
+      where: { id: +id },
     });
 
     if (!userExists) {
@@ -66,5 +66,22 @@ export class UsersService {
       `Usuario ID: ${id}, atualizado com sucesso`,
       HttpStatus.OK,
     );
+  }
+
+  async delete(id: string) {
+    const userExists = await this.prisma.user.findFirst({
+      where: { id: Number(id) },
+    });
+
+    if (!userExists) {
+      throw new HttpException(
+        `Usuario com o ID ${id} não localizado`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    await this.prisma.user.delete({ where: { id: Number(id) } });
+
+    throw new HttpException(`Usuario ID: ${id}, deletado`, HttpStatus.OK);
   }
 }
